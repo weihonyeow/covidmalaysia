@@ -1,23 +1,18 @@
 from flask import Flask, jsonify
-import json
-import pandas as pd
+import requests
 
-url = "https://raw.githubusercontent.com/MoH-Malaysia/covid19-public/main/epidemic/cases_malaysia.csv"
-df = pd.read_csv(url, usecols=[0, 1, 2, 4])
-df2 = df.iloc[[-1]]
-df3 = df2.to_json('df.json',orient='records')
-buttom = df.tail(1)
-concatenated = pd.concat([buttom])
+from csv2json import csv2json
 
 app = Flask(__name__)
-with open('df.json') as json_file:
-    data = json.load(json_file)
-resulte = data
-
+url = "https://raw.githubusercontent.com/MoH-Malaysia/covid19-public/main/epidemic/cases_malaysia.csv"
 
 @app.route('/', methods=['get'])
 def home():
-    return jsonify({'covid data': resulte})
+    return jsonify({
+        'ok': True,
+        'status': 200,
+        'result': csv2json(requests.get(url).text)
+    })
 
 
 if __name__ == '__main__':
